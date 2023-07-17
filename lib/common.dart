@@ -1,16 +1,16 @@
+import 'package:animations_kit/constants.dart';
 import 'package:flutter/material.dart';
 
-class BackButton extends StatelessWidget {
-  const BackButton({super.key});
+class BackHomeButton extends StatelessWidget {
+  const BackHomeButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        print("dsgsd");
-        Navigator.pop(context);
+        Navigator.of(context).pop();
       },
-      child: const Text("Go back to home"),
+      child: Text(AppConstants.backHome, style: TextStyles.button()),
     );
   }
 }

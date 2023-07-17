@@ -1,6 +1,10 @@
 import 'package:animations_kit/constants.dart';
 import 'package:flutter/material.dart';
 
+import 'animation_gallery.dart';
+import 'animation_model.dart';
+import 'common.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -11,9 +15,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: AppConstants.kAppName,
+      title: AppConstants.appName,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: ColorConstants.primary),
         useMaterial3: true,
       ),
       routes: {
@@ -21,6 +25,66 @@ class MyApp extends StatelessWidget {
         PathNames.slideAndScaleDrawer: (context) => const SlideAndScaleDrawer(),
       },
       initialRoute: '/',
+    );
+  }
+}
+
+class WelcomeWidget extends StatefulWidget {
+  const WelcomeWidget({super.key});
+
+  @override
+  State<WelcomeWidget> createState() => _WelcomeWidgetState();
+}
+
+class _WelcomeWidgetState extends State<WelcomeWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height / 2,
+      width: MediaQuery.of(context).size.width,
+      color: ColorConstants.primary,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Sizes.defaultPadding,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    AppConstants.appName.split(" ")[0],
+                    style: TextStyles.headline2(
+                      color: ColorConstants.white,
+                      fontWeight: boldOrNot.bold,
+                    ),
+                  ),
+                  Text(
+                    " ${AppConstants.appName.split(" ")[1]}",
+                    style: TextStyles.headline2(
+                      color: ColorConstants.white,
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                "A collection of animations built using Flutter.",
+                style: TextStyles.caption(color: ColorConstants.white),
+              ),
+              const Expanded(
+                child: AnimationGallery(),
+              ),
+              Text(
+                "by ${AppConstants.myName}",
+                style: TextStyles.headline6(color: ColorConstants.white),
+              ),
+              const SizedBox(height: Sizes.defaultPadding),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -35,15 +99,49 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
+    return const Scaffold(
+      body: Column(
+        children: [
+          WelcomeWidget(),
+          Expanded(
+            child: AnimationList(),
+          ),
+        ],
       ),
-      body: const AnimationList(),
     );
   }
 }
+
+final List<AnimationModel> animationList = [
+  AnimationModel(
+    name: AnimationNames.slideAndScaleDrawer,
+    description: AnimationDescriptions.slideAndScaleDrawer,
+    route: PathNames.slideAndScaleDrawer,
+    animationBy: AnimationBy(
+      name: "Marcin Szałek",
+      organization: "Flutter Europe",
+      referenceName:
+          "Implementing complex UI with Flutter - Marcin Szałek | Flutter Europe",
+      referenceUrl: "https://www.youtube.com/watch?v=FCyoHclCqc8",
+    ),
+    gifPath:
+        "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzh4Y3c2MHplYXlsamljNmg2dHgyODFpYmR2bWxqanNrZW82dXAzNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BfbUe877N4xsUhpcPc/giphy.gif",
+  ),
+  AnimationModel(
+    name: "XYZZZZ",
+    description: "XSFDSFDSGDSGDGDSG DSG DSG DSG DS D S",
+    route: PathNames.slideAndScaleDrawer,
+    animationBy: AnimationBy(
+      name: "Marcin Szałek",
+      organization: "Flutter Europe",
+      referenceName:
+          "Implementing complex UI with Flutter - Marcin Szałek | Flutter Europe",
+      referenceUrl: "https://www.youtube.com/watch?v=FCyoHclCqc8",
+    ),
+    gifPath:
+        "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2s1NXNmOXM3cHVlNHkyeGszbDBnY3dtcTkxenhtNGRlYTNjYmhneiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o85xAuO9kQ9c4mBFK/giphy.gif",
+  ),
+];
 
 class AnimationList extends StatefulWidget {
   const AnimationList({super.key});
@@ -55,28 +153,51 @@ class AnimationList extends StatefulWidget {
 class _AnimationListState extends State<AnimationList> {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: const [
-        AnimationTile(
-          name: AnimationNames.slideAndScaleDrawer,
-          subtitle: AnimationDescriptions.slideAndScaleDrawer,
-          route: PathNames.slideAndScaleDrawer,
-        ),
-      ],
+    return ListView.separated(
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return AnimationTile(
+          name: animationList[index].name,
+          subtitle: animationList[index].description,
+          route: animationList[index].route,
+        );
+      },
+      separatorBuilder: (context, index) {
+        return const Divider();
+      },
+      itemCount: animationList.length,
     );
   }
+}
+
+class AnimationBy {
+  final String? name;
+  final String? organization;
+  final String? referenceName;
+  final String? referenceUrl;
+  final List<String>? socialMediaLinks;
+
+  AnimationBy({
+    this.name,
+    this.organization,
+    this.referenceName,
+    this.referenceUrl,
+    this.socialMediaLinks,
+  });
 }
 
 class AnimationTile extends StatefulWidget {
   final String name;
   final String subtitle;
   final String route;
+  final AnimationBy? animationBy;
 
   const AnimationTile({
     super.key,
     required this.name,
     required this.subtitle,
     required this.route,
+    this.animationBy,
   });
 
   @override
@@ -91,7 +212,8 @@ class _AnimationTileState extends State<AnimationTile> {
       subtitle: Text(widget.subtitle),
       trailing: const Icon(Icons.arrow_forward_ios_outlined),
       onTap: () {
-        Navigator.of(context).pushNamed(widget.route);
+        Navigator.of(context)
+            .pushNamed(widget.route, arguments: widget.animationBy);
       },
     );
   }
@@ -99,6 +221,7 @@ class _AnimationTileState extends State<AnimationTile> {
 
 class SlideAndScaleDrawer extends StatefulWidget {
   const SlideAndScaleDrawer({super.key});
+  static const routeName = PathNames.slideAndScaleDrawer;
 
   @override
   State<SlideAndScaleDrawer> createState() => _SlideAndScaleDrawerState();
@@ -106,8 +229,8 @@ class SlideAndScaleDrawer extends StatefulWidget {
 
 class _SlideAndScaleDrawerState extends State<SlideAndScaleDrawer>
     with SingleTickerProviderStateMixin {
-  final drawerColor = Colors.blue;
-  final backgroundColor = Colors.white;
+  final drawerColor = ColorConstants.primary;
+  final backgroundColor = ColorConstants.white;
   final double maxSlide = 225.0;
   late AnimationController animationController;
   bool _canBeDragged = false;
@@ -167,8 +290,11 @@ class _SlideAndScaleDrawerState extends State<SlideAndScaleDrawer>
 
   @override
   Widget build(BuildContext context) {
+    final animationBy =
+        ModalRoute.of(context)!.settings.arguments as AnimationBy;
+    print("Animation By: ${animationBy.name}");
     return WillPopScope(
-      onWillPop: () async => true,
+      onWillPop: () async => false,
       child: GestureDetector(
         onHorizontalDragStart: _onDragStart,
         onHorizontalDragUpdate: _onDragUpdate,
@@ -179,70 +305,80 @@ class _SlideAndScaleDrawerState extends State<SlideAndScaleDrawer>
             double slide = maxSlide * animationController.value;
             double scale = 1 - (animationController.value * 0.3);
             return Scaffold(
+              backgroundColor: ColorConstants.white,
+              appBar: AppBar(
                 backgroundColor: ColorConstants.white,
-                appBar: AppBar(
-                  backgroundColor: ColorConstants.white,
-                  leading: GestureDetector(
-                    onTap: toggle,
-                    child: const Icon(Icons.menu),
-                  ),
-                  title: const Text(AnimationNames.slideAndScaleDrawer),
+                leading: IconButton(
+                  onPressed: toggle,
+                  icon: const Icon(Icons.menu),
+                  splashRadius: 10,
                 ),
-                body: Stack(
-                  children: [
-                    //Drawer
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      color: drawerColor,
-                      child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Saksham",
-                                  style: TextStyles.headline2(
-                                    color: ColorConstants.white,
-                                    fontWeight: FontWeight.normal,
-                                  )),
-                              Text(
-                                "Karnawat",
-                                style: TextStyles.headline2(
-                                  color: ColorConstants.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    //Background
-                    Transform(
-                      transform: Matrix4.identity()
-                        ..translate(slide)
-                        ..scale(scale),
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        color: backgroundColor,
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                title: const Text(AnimationNames.slideAndScaleDrawer),
+              ),
+              body: Stack(
+                children: [
+                  //Drawer
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    color: drawerColor,
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Swipe Left to Right to see the animation",
+                              "Saksham",
+                              style: TextStyles.headline2(
+                                color: ColorConstants.white,
+                                fontWeight: boldOrNot.notBold,
+                              ),
                             ),
-                            // TODO: Add animation demo GIF
-                            Placeholder(),
-                            BackButton(),
+                            Text(
+                              "Karnawat",
+                              style: TextStyles.headline2(
+                                color: ColorConstants.white,
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ),
-                  ],
-                ));
+                  ),
+                  //Background
+                  Transform(
+                    transform: Matrix4.identity()
+                      ..translate(slide)
+                      ..scale(scale),
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      color: backgroundColor,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Swipe Left to Right to see the animation",
+                          ),
+                          // TODO: Add animation demo GIF
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            child: Placeholder(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              floatingActionButton: const BackHomeButton(),
+            );
           },
         ),
       ),
